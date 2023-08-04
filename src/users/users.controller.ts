@@ -29,20 +29,15 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':username')
-  findOne(@Param('username') username: string) {
-    return this.usersService.findOne(username);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id')
-  update(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    if (req.user?.sub !== +id) throw new UnauthorizedException();
-    return this.usersService.update(+id, updateUserDto);
+  @Patch('update')
+  update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(req.user?.sub, updateUserDto);
   }
 
   @UseGuards(AuthGuard)
