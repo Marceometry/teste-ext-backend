@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
@@ -12,6 +18,14 @@ export class Post {
   @Column()
   description: string;
 
+  @Column()
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.posts)
-  user: number;
+  @JoinColumn({
+    name: 'userId',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'id',
+  })
+  user: User;
 }
