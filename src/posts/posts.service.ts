@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CommentsService } from '@/comments/comments.service';
 import { User } from '@/users/entities/user.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -11,6 +12,7 @@ export class PostsService {
   constructor(
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
+    private commentsService: CommentsService,
   ) {}
 
   async create(userId: number, createPostDto: CreatePostDto) {
@@ -18,11 +20,14 @@ export class PostsService {
   }
 
   findAll() {
-    return this.postsRepository.find();
+    return this.postsRepository.find({ relations: ['user', 'comments'] });
   }
 
   findOne(id: number) {
-    return this.postsRepository.findOne({ where: { id }, relations: ['user'] });
+    return this.postsRepository.findOne({
+      where: { id },
+      relations: ['user', 'comments'],
+    });
   }
 
   findByUser(userId: number) {
@@ -32,7 +37,14 @@ export class PostsService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['comments'],
+    });
+    post.comments.forEach((comment) => {
+      this.commentsService.remove(comment.id, 'post_owner');
+    });
     return this.postsRepository.softDelete(id);
   }
 

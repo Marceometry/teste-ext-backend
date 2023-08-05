@@ -43,6 +43,12 @@ export class PostsController {
   }
 
   @Public()
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.postsService.findByUser(+userId);
+  }
+
+  @Public()
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
     const post = await this.postsService.findOne(+id);
