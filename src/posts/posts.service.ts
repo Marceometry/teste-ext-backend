@@ -13,7 +13,7 @@ export class PostsService {
     private postsRepository: Repository<Post>,
   ) {}
 
-  create(createPostDto: CreatePostDto & { userId: number }) {
+  async create(createPostDto: CreatePostDto & { userId: number }) {
     return this.postsRepository.save(createPostDto);
   }
 
@@ -35,7 +35,8 @@ export class PostsService {
 
     if (
       post.title !== updatePostDto.title ||
-      post.description !== updatePostDto.description
+      post.description !== updatePostDto.description ||
+      post.imageUrl !== updatePostDto.imageUrl
     ) {
       if (!post.editHistory) {
         post.editHistory = [];
@@ -45,6 +46,7 @@ export class PostsService {
         content: JSON.stringify({
           title: post.title,
           description: post.description,
+          imageUrl: post.imageUrl,
         }),
         editedAt: new Date(),
       });
