@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { FilesModule } from './files/files.module';
 import { CommentsModule } from './comments/comments.module';
+import { MailingModule } from './mailing/mailing.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommentsModule } from './comments/comments.module';
     AuthModule,
     FilesModule,
     CommentsModule,
+    MailingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
