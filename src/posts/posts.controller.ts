@@ -20,8 +20,7 @@ export class PostsController {
 
   @Post()
   create(@Request() req, @Body() createPostDto: CreatePostDto) {
-    const userId = req.user.sub;
-    return this.postsService.create({ ...createPostDto, userId });
+    return this.postsService.create(req.user.sub, createPostDto);
   }
 
   @Public()

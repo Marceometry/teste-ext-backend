@@ -13,8 +13,8 @@ export class PostsService {
     private postsRepository: Repository<Post>,
   ) {}
 
-  async create(createPostDto: CreatePostDto & { userId: number }) {
-    return this.postsRepository.save(createPostDto);
+  async create(userId: number, createPostDto: CreatePostDto) {
+    return this.postsRepository.save({ ...createPostDto, userId });
   }
 
   findAll() {
@@ -26,7 +26,7 @@ export class PostsService {
   }
 
   remove(id: number) {
-    return this.postsRepository.delete(id);
+    return this.postsRepository.softDelete(id);
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
