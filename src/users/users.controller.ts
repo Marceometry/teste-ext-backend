@@ -6,11 +6,10 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthGuard } from '../auth/auth.guard';
+import { Public } from '../auth/auth.controller';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,28 +18,29 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('update')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(req.user?.sub, updateUserDto);
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Request() req, @Param('id') id: string) {
     if (req.user?.sub !== +id) throw new UnauthorizedException();

@@ -31,4 +31,13 @@ export class PostsService {
   remove(id: number) {
     return this.postsRepository.delete(id);
   }
+
+  addView(id: number) {
+    this.postsRepository
+      .createQueryBuilder()
+      .update(Post)
+      .set({ views: () => 'views + 1' })
+      .where('id = :id', { id })
+      .execute();
+  }
 }

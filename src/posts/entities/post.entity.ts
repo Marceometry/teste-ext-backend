@@ -19,6 +19,15 @@ export class Post {
   description: string;
 
   @Column()
+  views: number;
+
+  @Column()
+  likes: number;
+
+  @Column()
+  dislikes: number;
+
+  @Column()
   userId: number;
 
   @ManyToOne(() => User, (user) => user.posts)
