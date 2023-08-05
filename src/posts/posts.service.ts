@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CommentsService } from '@/comments/comments.service';
@@ -37,11 +37,24 @@ export class PostsService {
     });
   }
 
+  async generateReport(userId: number) {
+    const posts = await this.findByUser(userId);
+    return posts.map((post) => ({
+      id: post.id,
+      title: post.title,
+      views: post.views,
+      likes: post.likes,
+      dislikes: post.dislikes,
+      comments: post.comments.length,
+    }));
+  }
+
   async remove(id: number) {
     const post = await this.postsRepository.findOne({
       where: { id },
       relations: ['comments'],
     });
+    if (!post) throw new NotFoundException('Post not found');
     post.comments.forEach((comment) => {
       this.commentsService.remove(comment.id, 'post_owner');
     });
@@ -50,7 +63,7 @@ export class PostsService {
 
   async update(id: number, updatePostDto: UpdatePostDto) {
     const post = await this.postsRepository.findOne({ where: { id } });
-    if (!post) return null;
+    if (!post) throw new NotFoundException('Post not found');
 
     if (
       post.title !== updatePostDto.title ||
@@ -91,7 +104,7 @@ export class PostsService {
       where: { id: postId },
       relations: ['likedByUsers', 'dislikedByUsers'],
     });
-    if (!post) return null;
+    if (!post) throw new NotFoundException('Post not found');
 
     if (add) {
       const userLikedPost = post.likedByUsers.some(
@@ -129,7 +142,7 @@ export class PostsService {
       where: { id: postId },
       relations: ['dislikedByUsers', 'likedByUsers'],
     });
-    if (!post) return null;
+    if (!post) throw new NotFoundException('Post not found');
 
     if (add) {
       const userDislikedPost = post.dislikedByUsers.some(

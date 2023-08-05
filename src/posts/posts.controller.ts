@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Public } from '@/auth/auth.controller';
 import { PostsService } from './posts.service';
@@ -30,16 +31,8 @@ export class PostsController {
   }
 
   @Get('report')
-  async getReport(@Request() req) {
-    const posts = await this.postsService.findByUser(req.user.sub);
-    return posts.map((post) => ({
-      id: post.id,
-      title: post.title,
-      views: post.views,
-      likes: post.likes,
-      dislikes: post.dislikes,
-      comments: post.comments.length,
-    }));
+  getReport(@Request() req) {
+    return this.postsService.generateReport(req.user.sub);
   }
 
   @Public()
@@ -52,6 +45,7 @@ export class PostsController {
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
     const post = await this.postsService.findOne(+id);
+    if (!post) throw new NotFoundException('Post not found');
     if (req.user?.sub !== post.userId) {
       this.postsService.addView(post.id);
     }
@@ -85,6 +79,7 @@ export class PostsController {
     @Body() updatePostDto: UpdatePostDto,
   ) {
     const post = await this.postsService.findOne(+id);
+    if (!post) throw new NotFoundException('Post not found');
     if (req.user.sub !== post.user.id) throw new UnauthorizedException();
     return this.postsService.update(+id, updatePostDto);
   }
@@ -92,6 +87,7 @@ export class PostsController {
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
     const post = await this.postsService.findOne(+id);
+    if (!post) throw new NotFoundException('Post not found');
     if (req.user.sub !== post.user.id) throw new UnauthorizedException();
     return this.postsService.remove(+id);
   }

@@ -51,7 +51,7 @@ export class CommentsService {
     return this.commentsRepository.update(id, { deletedBy });
   }
 
-  async notifyPostOwner(commentId = 1) {
+  async notifyPostOwner(commentId: number) {
     const comment = await this.commentsRepository
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.post', 'post')

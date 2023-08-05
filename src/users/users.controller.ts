@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   Request,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Public } from '@/auth/auth.controller';
 import { UsersService } from './users.service';
@@ -41,9 +40,8 @@ export class UsersController {
     return this.usersService.update(req.user.sub, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Request() req, @Param('id') id: string) {
-    if (req.user.sub !== +id) throw new UnauthorizedException();
-    return this.usersService.remove(+id);
+  @Delete()
+  remove(@Request() req) {
+    return this.usersService.remove(req.user.sub);
   }
 }
