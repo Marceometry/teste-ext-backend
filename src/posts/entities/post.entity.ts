@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+import { User } from '@/users/entities/user.entity';
 
 @Entity()
 export class Post {
@@ -37,4 +39,12 @@ export class Post {
     foreignKeyConstraintName: 'id',
   })
   user: User;
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  likedByUsers: User[];
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  dislikedByUsers: User[];
 }

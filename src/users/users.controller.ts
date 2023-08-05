@@ -9,7 +9,7 @@ import {
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Public } from '../auth/auth.controller';
+import { Public } from '@/auth/auth.controller';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -38,12 +38,12 @@ export class UsersController {
 
   @Patch('update')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(req.user?.sub, updateUserDto);
+    return this.usersService.update(req.user.sub, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Request() req, @Param('id') id: string) {
-    if (req.user?.sub !== +id) throw new UnauthorizedException();
+    if (req.user.sub !== +id) throw new UnauthorizedException();
     return this.usersService.remove(+id);
   }
 }
