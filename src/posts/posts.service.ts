@@ -25,6 +25,13 @@ export class PostsService {
     return this.postsRepository.findOne({ where: { id }, relations: ['user'] });
   }
 
+  findByUser(userId: number) {
+    return this.postsRepository.find({
+      where: { userId },
+      relations: ['comments'],
+    });
+  }
+
   remove(id: number) {
     return this.postsRepository.softDelete(id);
   }

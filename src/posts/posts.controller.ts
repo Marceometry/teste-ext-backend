@@ -29,6 +29,19 @@ export class PostsController {
     return this.postsService.findAll();
   }
 
+  @Get('report')
+  async getReport(@Request() req) {
+    const posts = await this.postsService.findByUser(req.user.sub);
+    return posts.map((post) => ({
+      id: post.id,
+      title: post.title,
+      views: post.views,
+      likes: post.likes,
+      dislikes: post.dislikes,
+      comments: post.comments.length,
+    }));
+  }
+
   @Public()
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
