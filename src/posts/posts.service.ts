@@ -13,7 +13,7 @@ export class PostsService {
     private postsRepository: Repository<Post>,
   ) {}
 
-  create(createPostDto: CreatePostDto) {
+  create(createPostDto: CreatePostDto & { userId: number }) {
     return this.postsRepository.save(createPostDto);
   }
 
@@ -25,12 +25,35 @@ export class PostsService {
     return this.postsRepository.findOne({ where: { id }, relations: ['user'] });
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return this.postsRepository.update(id, updatePostDto);
-  }
-
   remove(id: number) {
     return this.postsRepository.delete(id);
+  }
+
+  async update(id: number, updatePostDto: UpdatePostDto) {
+    const post = await this.postsRepository.findOne({ where: { id } });
+    if (!post) return null;
+
+    if (
+      post.title !== updatePostDto.title ||
+      post.description !== updatePostDto.description
+    ) {
+      if (!post.editHistory) {
+        post.editHistory = [];
+      }
+
+      post.editHistory.push({
+        content: JSON.stringify({
+          title: post.title,
+          description: post.description,
+        }),
+        editedAt: new Date(),
+      });
+    }
+
+    return this.postsRepository.update(id, {
+      ...updatePostDto,
+      editHistory: post.editHistory,
+    });
   }
 
   addView(id: number) {

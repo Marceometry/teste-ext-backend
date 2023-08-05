@@ -20,6 +20,9 @@ export class Post {
   @Column()
   description: string;
 
+  @Column('json', { nullable: true })
+  editHistory: { content: string; editedAt: Date }[];
+
   @Column()
   views: number;
 
