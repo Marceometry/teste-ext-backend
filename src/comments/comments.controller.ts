@@ -24,7 +24,7 @@ export class CommentsController {
     @Param('postId') postId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    return this.commentsService.create(+postId, req.user.sub, createCommentDto);
+    return this.commentsService.create(+postId, req.user.id, createCommentDto);
   }
 
   @Public()
@@ -40,14 +40,14 @@ export class CommentsController {
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     const comment = await this.commentsService.findOne(+id);
-    if (req.user.sub !== comment.user.id) throw new UnauthorizedException();
+    if (req.user.id !== comment.user.id) throw new UnauthorizedException();
     return this.commentsService.update(+id, updateCommentDto);
   }
 
   @Delete(':id')
   async remove(@Request() req, @Param('id') id: string) {
     const comment = await this.commentsService.findOne(+id);
-    const userId = req.user.sub;
+    const userId = req.user.id;
     const isPostOwner = userId === comment.post.userId;
     if (userId !== comment.user.id || !isPostOwner) {
       throw new UnauthorizedException();

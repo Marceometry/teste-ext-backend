@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { Public } from '@/auth/auth.controller';
 import { UsersService } from './users.service';
@@ -31,17 +32,19 @@ export class UsersController {
 
   @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const user = await this.usersService.findOne(+id);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   @Patch('update')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(req.user.sub, updateUserDto);
+    return this.usersService.update(req.user.id, updateUserDto);
   }
 
   @Delete()
   remove(@Request() req) {
-    return this.usersService.remove(req.user.sub);
+    return this.usersService.remove(req.user.id);
   }
 }

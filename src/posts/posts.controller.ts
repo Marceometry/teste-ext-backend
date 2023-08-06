@@ -21,7 +21,7 @@ export class PostsController {
 
   @Post()
   create(@Request() req, @Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(req.user.sub, createPostDto);
+    return this.postsService.create(req.user.id, createPostDto);
   }
 
   @Public()
@@ -32,7 +32,7 @@ export class PostsController {
 
   @Get('report')
   getReport(@Request() req) {
-    return this.postsService.generateReport(req.user.sub);
+    return this.postsService.generateReport(req.user.id);
   }
 
   @Public()
@@ -46,7 +46,7 @@ export class PostsController {
   async findOne(@Request() req, @Param('id') id: string) {
     const post = await this.postsService.findOne(+id);
     if (!post) throw new NotFoundException('Post not found');
-    if (req.user?.sub !== post.userId) {
+    if (req.user?.id !== post.userId) {
       this.postsService.addView(post.id);
     }
     return post;
@@ -54,22 +54,22 @@ export class PostsController {
 
   @Patch(':id/like')
   like(@Request() req, @Param('id') id: string) {
-    return this.postsService.manageLike(+id, req.user.sub, true);
+    return this.postsService.manageLike(+id, req.user.id, true);
   }
 
   @Patch(':id/like/remove')
   removeLike(@Request() req, @Param('id') id: string) {
-    return this.postsService.manageLike(+id, req.user.sub, false);
+    return this.postsService.manageLike(+id, req.user.id, false);
   }
 
   @Patch(':id/dislike')
   dislike(@Request() req, @Param('id') id: string) {
-    return this.postsService.manageDislike(+id, req.user.sub, true);
+    return this.postsService.manageDislike(+id, req.user.id, true);
   }
 
   @Patch(':id/dislike/remove')
   removeDislike(@Request() req, @Param('id') id: string) {
-    return this.postsService.manageDislike(+id, req.user.sub, false);
+    return this.postsService.manageDislike(+id, req.user.id, false);
   }
 
   @Patch(':id')
@@ -80,7 +80,7 @@ export class PostsController {
   ) {
     const post = await this.postsService.findOne(+id);
     if (!post) throw new NotFoundException('Post not found');
-    if (req.user.sub !== post.user.id) throw new UnauthorizedException();
+    if (req.user.id !== post.user.id) throw new UnauthorizedException();
     return this.postsService.update(+id, updatePostDto);
   }
 
@@ -88,7 +88,7 @@ export class PostsController {
   async remove(@Request() req, @Param('id') id: string) {
     const post = await this.postsService.findOne(+id);
     if (!post) throw new NotFoundException('Post not found');
-    if (req.user.sub !== post.user.id) throw new UnauthorizedException();
+    if (req.user.id !== post.user.id) throw new UnauthorizedException();
     return this.postsService.remove(+id);
   }
 }
