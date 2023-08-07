@@ -4,6 +4,8 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class MailingService {
   async sendEmail(to: string, subject: string, text: string) {
+    if (!process.env.MAIL_USER || !process.env.MAIL_HOST) return;
+
     const transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
       port: Number(process.env.MAIL_PORT),
