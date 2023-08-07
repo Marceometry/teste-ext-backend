@@ -38,12 +38,12 @@ export class UsersController {
     return user;
   }
 
-  @Patch('update')
+  @Patch('me')
   update(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(req.user.id, updateUserDto);
   }
 
-  @Delete()
+  @Delete('me')
   remove(@Request() req) {
     return this.usersService.remove(req.user.id);
   }
