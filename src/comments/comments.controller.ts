@@ -49,7 +49,7 @@ export class CommentsController {
     const comment = await this.commentsService.findOne(+id);
     const userId = req.user.id;
     const isPostOwner = userId === comment.post.userId;
-    if (userId !== comment.user.id || !isPostOwner) {
+    if (userId !== comment.user.id && !isPostOwner) {
       throw new UnauthorizedException();
     }
     const deletedBy = isPostOwner ? 'post_owner' : 'comment_owner';
