@@ -15,25 +15,27 @@ export class PostsService {
     private commentsService: CommentsService,
   ) {}
 
+  relations = ['user', 'comments', 'likedByUsers', 'dislikedByUsers'];
+
   async create(userId: number, createPostDto: CreatePostDto) {
     return this.postsRepository.save({ ...createPostDto, userId });
   }
 
   findAll() {
-    return this.postsRepository.find({ relations: ['user', 'comments'] });
+    return this.postsRepository.find({ relations: this.relations });
   }
 
   findOne(id: number) {
     return this.postsRepository.findOne({
       where: { id },
-      relations: ['user', 'comments'],
+      relations: this.relations,
     });
   }
 
   findByUser(userId: number) {
     return this.postsRepository.find({
       where: { userId },
-      relations: ['comments'],
+      relations: this.relations,
     });
   }
 
